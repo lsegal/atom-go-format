@@ -4,6 +4,6 @@
   "version": "0.0.0",
   "private": true,
   "description": "Automatically runs `go fmt` on Go source files when saved.",
-  "repository": "https://github.com/lsegal/go-format",
+  "repository": "https://github.com/lsegal/atom-go-format",
   "license": "MIT"
 }
