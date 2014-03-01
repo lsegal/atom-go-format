@@ -9,7 +9,7 @@ class GoFormatStatusView extends View
     @detach()
 
   initialize: ->
-    setTimeout((=> @attach()), 10)
+    setTimeout((=> @attach()), 0)
 
   attach: ->
     statusbar = atom.workspaceView.statusBar
