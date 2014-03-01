@@ -15,7 +15,7 @@ module.exports =
     atom.workspaceView.command 'go-format:format', =>
       editor = atom.workspace.getActiveEditor()
       if editor
-        view.format(editor)
+        @view.format(editor)
 
   deactivate: ->
     @view.destroy()
