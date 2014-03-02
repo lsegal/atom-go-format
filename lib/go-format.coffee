@@ -39,10 +39,26 @@ module.exports =
     if editor and editor.getPath()
       scope = editor.getCursorScopes()[0]
       if scope is 'source.go'
+        editorView = atom.workspaceView.getActiveView()
+        if editorView.gutter and editorView.gutter.attached
+          editorView.gutter.removeClassFromAllLines('go-format-error')
+          editorView.gutter.find('.go-format-error-msg').remove()
+
         cmd = atom.config.get('go-format.executable')
-        exec cmd + ' ' + editor.getPath(), (err, stderr, stdout) =>
+        exec cmd + ' ' + editor.getPath(), (err, stdout, stderr) =>
           if not err or err.code is 0
-            text = 'Saved.'
+            @view.html('').hide()
           else
-            text = '<span class="error">Format Error.</span>'
-          @view.html(text).show()
+            editorView = atom.workspaceView.getActiveView()
+            if editorView.gutter and editorView.gutter.attached
+              stderr.split(/\r?\n/).forEach (line) ->
+                match = line.match(/^.+?:(\d+):(\d+):\s+(.+)/)
+                if match
+                  lineNo = parseInt(match[1]) - 1
+                  editorView.gutter.addClassToLine(lineNo, 'go-format-error')
+                  lineEl = editorView.gutter.find('.line-number-' + lineNo)
+                  if lineEl.size() > 0
+                    lineEl.prepend('<abbr class="go-format-error-msg" title="' +
+                      match[2] + ': ' + match[3] + '">✘</abbr>')
+
+            @view.html('<span class="error">Format Error.</span>').show()
