@@ -5,6 +5,10 @@ GoFormatStatusView = require('./go-format-status-view')
 module.exports =
   view: null
 
+  configDefaults:
+    executable: 'go fmt'
+    formatOnSave: true
+
   activate: (state) ->
     @view = new GoFormatStatusView(state.viewState)
     atom.project.eachEditor (editor) =>
@@ -26,7 +30,8 @@ module.exports =
 
   attachEditor: (editor) ->
     atom.subscribe editor.getBuffer(), 'reloaded saved', =>
-      @format(editor)
+      if atom.config.get('go-format.formatOnSave')
+        @format(editor)
     atom.subscribe editor.getBuffer(), 'destroyed', =>
       atom.unsubscribe(editor.getBuffer())
 
@@ -34,7 +39,8 @@ module.exports =
     if editor and editor.getPath()
       scope = editor.getCursorScopes()[0]
       if scope is 'source.go'
-        exec 'go fmt ' + editor.getPath(), (err, stderr, stdout) =>
+        cmd = atom.config.get('go-format.executable')
+        exec cmd + ' ' + editor.getPath(), (err, stderr, stdout) =>
           if not err or err.code is 0
             text = 'Saved.'
           else
