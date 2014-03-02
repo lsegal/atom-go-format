@@ -49,6 +49,9 @@ module.exports =
           if not err or err.code is 0
             @view.html('').hide()
           else
+            message = 'Format error.'
+            if stderr.match(/No such file or directory/)
+              message = 'Cannot find gofmt executable.'
             editorView = atom.workspaceView.getActiveView()
             if editorView.gutter and editorView.gutter.attached
               stderr.split(/\r?\n/).forEach (line) ->
@@ -61,4 +64,4 @@ module.exports =
                     lineEl.prepend('<abbr class="go-format-error-msg" title="' +
                       match[2] + ': ' + match[3] + '">✘</abbr>')
 
-            @view.html('<span class="error">Format Error.</span>').show()
+            @view.html('<span class="error">' + message + '</span>').show()
