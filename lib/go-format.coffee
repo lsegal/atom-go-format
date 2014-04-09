@@ -35,6 +35,11 @@ module.exports =
     atom.subscribe editor.getBuffer(), 'destroyed', =>
       atom.unsubscribe(editor.getBuffer())
 
+  command: (editor) ->
+    executable = atom.config.get('go-format.executable')
+    cmd = "#{executable} #{editor.getPath()}"
+    "bash --login -c '#{cmd.replace(/'/g, "\\'")}'"
+
   format: (editor) ->
     if editor and editor.getPath()
       scope = editor.getCursorScopes()[0]
@@ -44,11 +49,11 @@ module.exports =
           editorView.gutter.removeClassFromAllLines('go-format-error')
           editorView.gutter.find('.go-format-error-msg').remove()
 
-        cmd = atom.config.get('go-format.executable')
-        exec cmd + ' ' + editor.getPath(), (err, stdout, stderr) =>
+        exec @command(editor), (err, stdout, stderr) =>
           if not err or err.code is 0
             @view.html('').hide()
           else
+            console.log("[go-format save error]: " + stderr)
             message = 'Format error.'
             if stderr.match(/No such file or directory/)
               message = 'Cannot find gofmt executable.'
