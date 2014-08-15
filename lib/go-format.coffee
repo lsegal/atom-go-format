@@ -11,7 +11,7 @@ module.exports =
 
   activate: (state) ->
     @view = new GoFormatStatusView(state.viewState)
-    atom.project.eachEditor (editor) =>
+    atom.workspace.eachEditor (editor) =>
       @attachEditor(editor)
     atom.subscribe atom.project, 'editor-created', (editor) =>
       @attachEditor(editor)
